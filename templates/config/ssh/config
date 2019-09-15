@@ -1,0 +1,12 @@
+Host *github.com
+    User git
+    Hostname github.com
+    PreferredAuthentications publickey
+    IdentityFile ~/.ssh/github_rsa
+    IdentitiesOnly yes
+    ForwardAgent yes
+
+Host *
+    ForwardAgent no
+    IdentitiesOnly yes
+

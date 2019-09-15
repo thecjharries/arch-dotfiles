@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: install openssh
+      yay:
+        name: openssh
+        state: latest
+      become: yes
+
+    - name: template ssh config
+      template:
+        src: "{{ template_path }}/config/ssh/config"
+        dest: "{{ xdg_config_home}}/ssh/config"
+        mode: 0644
+
+    - name: symlink the directory
+      file:
+        src: "{{ xdg_config_home }}/ssh"
+        dest: "{{ home }}/.ssh"
+        state: link
+
+    - name: verify with github
+      command: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -T github.com
+      register: result
+      failed_when: "'Permission denied' in result.stderr"
+      changed_when: False
