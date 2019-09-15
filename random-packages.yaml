@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: jq
+      - name: htop
+      - name: vlc
+      - name: p7zip
+      - name: p7zip-plugins
+      - name: unrar
+      - name: tar
+      - name: rsync
+      - name: gimp
+      - name: inkscape
+      - name: shutter
+      - name: strace
+      - name: xclip
+
+  roles:
+    - role: yay
