@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: vim
+      - name: clang
+      - name: cmake
+    ycm_dir: "{{ xdg_config_home }}/vim/bundle/YouCompleteMe"
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: install vundle
+      git:
+        repo: "https://github.com/VundleVim/Vundle.vim.git"
+        dest: "{{ xdg_config_home }}/vim/bundle/Vundle.vim"
+
+    - name: template vimrc
+      template:
+        src: "{{ template_path }}/config/vim/vimrc"
+        dest: "{{ xdg_config_home }}/vim/vimrc"
+        mode: 0600
+      tags:
+        - template
+
+    - name: symlink vim dir
+      file:
+        src: "{{ xdg_config_home }}/vim"
+        dest: "{{ home }}/.vim"
+        state: link
+
+    - name: symlink vimrc
+      file:
+        src: "{{ xdg_config_home }}/vim/vimrc"
+        dest: "{{ home }}/.vimrc"
+        state: link
+
+    - name: bootstrap Vundle
+      command: vim -E -s -c "source $HOME/.vimrc" +PluginInstall +qall
+      register: result
+      changed_when: "result.stdout != ''"
+      tags:
+        - plugins
+
+    - name: install YCM
+      command: python3 install.py --all
+      args:
+        chdir: "{{ ycm_dir }}"
+      register: result
+      #      changed_when: False
+
+    - debug:
+        var: result
