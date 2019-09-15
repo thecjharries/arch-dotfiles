@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep KeePass alive
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/keepass
+
+[Install]
+WantedBy=i3-session.target

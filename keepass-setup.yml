@@ -1,0 +1,34 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: xdotool
+      - name: xsel
+      - name: keepass
+      - name: keepass-plugin-keeagent
+    unit_files:
+      - keepass.service
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: template the units
+      template:
+        src: "{{ template_path }}/config/systemd/user/{{ item }}"
+        dest: "{{ xdg_config_home }}/systemd/user/{{ item }}"
+      with_items: "{{ unit_files }}"
+
+    - name: reload user systemctl
+      systemd:
+        daemon_reload: yes
+        scope: user
+
+    - name: enable services
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        enabled: yes
+      with_items: "{{ unit_files | map('regex_search', '^.*\\.service$') | select('string') | list }}"
+
