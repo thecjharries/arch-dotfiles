@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: python
+      - name: python-pip
+      - name: python2
+      - name: python2-pip
+    python_packages:
+      - pip
+      - pipenv
+      - asciinema
+      - flake8
+      - pyyaml
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: install python packages
+      pip:
+        extra_args: --user
+        name: "{{ python_packages }}"
+      tags:
+        - pip
+        - user
