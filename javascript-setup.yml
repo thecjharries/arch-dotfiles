@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: nodejs
+      - name: yarn
+      - name: npm
+    javascript_packages:
+      - typescript
+      - ts-node
+
+  roles:
+    - role: yay
