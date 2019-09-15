@@ -1,0 +1,50 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: install lightdm
+      pacman:
+        name: lightdm
+        state: latest
+      become: yes
+
+    - name: clone the greeter
+      git:
+        repo: clone https://aur.archlinux.org/lightdm-mini-greeter.git
+        dest: "{{ local_build }}/lightdm-mini-greeter"
+
+    - name: grab the location
+      command: makepkg --packagelist
+      args:
+        chdir: "{{ local_build }}/lightdm-mini-greeter"
+      register: package_tarball
+      changed_when: False
+
+    - name: check for package
+      stat:
+        path: "{{ package_tarball.stdout }}"
+      register: package_tarball_stat
+      changed_when: not package_tarball_stat.stat.exists
+
+    - name: build lightdm-mini-greeter
+      command: makepkg -scf
+      args:
+        chdir: "{{ local_build }}/lightdm-mini-greeter"
+      when: package_tarball_stat.changed
+      register: package_build
+
+    - name: install the package
+      pacman:
+        name: "{{ package_tarball.stdout }}"
+        state: latest
+      become: yes
+      when: package_build is succeeded
+
+    - name: template lightdm-mini-greeter config
+      template:
+        src: "{{ item }}"
+        dest: "/etc/lightdm/{{ item | basename }}"
+      with_fileglob:
+        - "{{ template_path }}/etc/lightdm/*"
+      become: yes
+
