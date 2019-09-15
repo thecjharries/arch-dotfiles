@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+
+  vars:
+    unit_files:
+      - xrandr.service
+
+  tasks:
+    - name: install xrandr
+      yay:
+        name: xorg-xrandr
+        state: latest
+      become: yes
+
+    - name: template the units
+      template:
+        src: "{{ template_path }}/config/systemd/user/{{ item }}"
+        dest: "{{ xdg_config_home }}/systemd/user/{{ item }}"
+      with_items: "{{ unit_files }}"
+
+    - name: reload user systemctl
+      systemd:
+        daemon_reload: yes
+        scope: user
+
+    - name: enable services
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        enabled: yes
+      with_items: "{{ unit_files | map('regex_search', '^.*\\.service$') | select('string') | list }}"
+
