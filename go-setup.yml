@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+
+  vars:
+    platform: linux
+    arch: amd64
+    go_path: "{{ home }}/go"
+    packages_to_install:
+      - name: go
+      - name: protobuf
+      - name: protobuf-go
+      - name: python-protobuf
+    go_packages:
+      - golang.org/x/tools/cmd/goimports
+      - google.golang.org/grpc
+      - gopkg.in/check.v1
+      - github.com/golang/protobuf/protoc-gen-go
+      - github.com/golangci/golangci-lint/cmd/golangci-lint
+      - github.com/spf13/cobra/cobra
+      - github.com/spf13/viper
+      - gopkg.in/check.v1
+
+  roles:
+    - role: yay
+
+#  tasks:
+#    - name: create shared go dir
+#      file:
+#        path: /usr/local/go
+#        state: directory
+#      become: yes
+#
+#    - name: create user go dir
+#      file:
+#        path: "{{ home }}/go"
+#        state: directory
+#
+#
+#    - name: install go packages
+#      command: bash -c "GO_PATH={{ go_path }} go get -u {{ item }}"
+#      with_items: "{{ go_packages }}"
+#      register: result
+#      changed_when: result.stdout != ''
