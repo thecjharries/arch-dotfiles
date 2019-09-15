@@ -1,0 +1,25 @@
+#
+# Collects alias shortcuts into a single location for simplicity
+#
+# Authors:
+#   CJ Harries <cj@wizardsoftheweb.pro>
+#
+
+# Console viewing and typo correction
+alias ls='ls --group-directories-first --color=auto'
+alias exa='exa --all --long --header --group-directories-first --group --git --time-style long-iso --color always --color-scale'
+alias ll='exa'
+alias kk='exa'
+alias exat='exa --tree --ignore-glob .git'
+alias lll='exat'
+alias kkk='exat'
+
+# Small, single tools that probably need more aliases
+alias k='kubectl'
+alias usysd='systemctl --user'
+
+# git-flow
+alias gffs='git flow feature start'
+alias gffp='git flow feature publish'
+alias gfff='git flow feature finish'
+
