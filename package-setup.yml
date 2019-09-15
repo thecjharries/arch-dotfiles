@@ -1,0 +1,62 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - base
+      - base-devel
+
+  tasks:
+    - name: create pacman config
+      template:
+        src: "{{ template_path }}/etc/pacman.conf"
+        dest: "/etc/pacman.conf"
+      become: yes
+
+    - name: update pacman
+      pacman:
+        update_cache: yes
+      become: yes
+
+    - name: clone the yay repo
+      git:
+        repo: https://aur.archlinux.org/yay.git
+        dest: "{{ local_build }}/yay"
+
+    - name: grab the location
+      command: makepkg --packagelist
+      args:
+        chdir: "{{ local_build }}/yay"
+      register: package_tarball
+      changed_when: False
+
+    - name: check for package
+      stat:
+        path: "{{ package_tarball.stdout }}"
+      register: package_tarball_stat
+      changed_when: not package_tarball_stat.stat.exists
+
+    - name: build yay
+      command: makepkg -scf
+      args:
+        chdir: "{{ local_build }}/yay"
+      when: package_tarball_stat.changed
+      register: package_build
+
+    - name: install the package
+      pacman:
+        name: "{{ package_tarball.stdout }}"
+        state: latest
+      become: yes
+      when: package_build is succeeded
+
+    - name: template yay config
+      template:
+        src: "{{ template_path }}/config/yay/config.json"
+        dest: "{{ xdg_config_home }}/yay/config.json"
+
+    - name: ensure the important stuff is there
+      pacman:
+        name: "{{ packages_to_install }}"
+        state: latest
+      become: yes
