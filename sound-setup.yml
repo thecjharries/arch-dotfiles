@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: alsa-utils
+      - name: alsa-plugins
+      - name: pulseaudio
+      - name: pulseaudio-alsa
+      - name: lib32-libpulse
+      - name: lib32-alsa-plugins
+      - name: pavucontrol
+    unit_files:
+      - pulseaudio.socket
+      - pulseaudio.service
+
+  roles:
+    - role: yay
+
+  tasks:
+     name: copy global pulseaudio config
+      copy:
+        src: /etc/pulse/
+        dest: "{{ xdg_config_home }}/pulse/"
+
+    - name: disable global pulseaudio
+      command: "systemctl --global disable {{ item }}"
+      become: yes
+      with_items: "{{ unit_files }}"
+
+    - name: enable user pulseaudio stuff
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        enabled: yes
+        state: started
+      with_items: "{{ unit_files }}"
