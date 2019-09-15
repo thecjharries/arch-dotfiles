@@ -1,0 +1,40 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: dropbox
+      - name: dropbox-cli
+    unit_files:
+      - dropbox.service
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: stat the annoying directory
+      stat:
+        path: "{{ home }}/.dropbox-dist"
+      register: dir_stat
+
+    - debug:
+        var: dir_stat
+
+    - name: remove the annoying directory
+      file:
+        path: "{{ home }}/.dropbox-dist"
+        state: absent
+      when: dir_stat.stat.exists and dir_stat.stat.mode|int > 0
+      register: removal
+
+    - name: prevent the directory from being written to
+      command: install -dm0 "{{ home }}/.dropbox-dist"
+      when: removal.changed
+
+    - name: enable services
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        enabled: yes
+        state: started
+      with_items: "{{ unit_files | map('regex_search', '^.*\\.service$') | select('string') | list }}"
