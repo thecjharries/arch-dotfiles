@@ -1,0 +1,24 @@
+#
+# Defines environment variables.
+#
+
+# Ensure that a non-login, non-interactive shell has a defined environment.
+if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR:-$HOME}/.zprofile" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprofile"
+fi
+
+if which keepass >/dev/null; then
+  export SSH_AUTH_SOCK=/home/cjharries/.local/run/keeagent.sock
+  unset SSH_ASKPASS
+fi
+
+export GITHUB_USER=thecjharries
+export GIT_MERGE_AUTOEDIT=no
+
+export GOROOT=/usr/lib/go
+export GOPATH=/home/cjharries/go
+export GOBIN=/home/cjharries/go/bin
+
+export R_ENVIRON_USER=$HOME/.Renviron
+
+export PATH=/opt/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH:/usr/local/go/bin:$GOBIN
