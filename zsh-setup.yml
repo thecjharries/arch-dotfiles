@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: zsh
+      - name: zsh-autosuggestions
+      - name: zsh-completions
+      - name: zsh-syntax-highlighting
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: install an extra plugin
+      git:
+        repo: https://github.com/zsh-users/zsh-history-substring-search
+        dest: "{{ xdg_config_home }}/zsh/zsh-history-substring-search"
+
+    - name: template startup/down files
+      template:
+        src: "{{ item }}"
+        dest: "{{ home }}/.{{ item | basename }}"
+      with_fileglob:
+        - "{{ template_path }}/config/zsh/*"
+      tags:
+        - template
