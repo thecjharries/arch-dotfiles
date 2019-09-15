@@ -1,0 +1,9 @@
+---
+- name: install packages
+  yay:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default(default_package_state) }}"
+  become: yes
+  with_items: "{{ packages_to_install }}"
+  tags:
+    - install
