@@ -1,0 +1,52 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: i3-gaps
+      - name: i3status
+    unit_files:
+      - i3-session.target
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: template the units
+      template:
+        src: "{{ template_path }}/config/systemd/user/{{ item }}"
+        dest: "{{ xdg_config_home }}/systemd/user/{{ item }}"
+      with_items: "{{ unit_files }}"
+
+    - name: reload user systemctl
+      systemd:
+        daemon_reload: yes
+        scope: user
+
+    - name: enable services
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        enabled: yes
+      with_items: "{{ unit_files | map('regex_search', '^.*\\.service$') | select('string') | list }}"
+
+
+    - name: template i3 config
+      template:
+        src: "{{ template_path }}/config/i3/config"
+        dest: "{{ xdg_config_home }}/i3/config"
+      tags:
+        - i3
+        - template
+
+    - name: reload i3 config
+      command: i3-msg reload
+      register: result
+      tags:
+        - i3
+
+    - name: restart i3
+      command: i3-msg restart
+      when: result is succeeded
+      tags:
+        - i3
