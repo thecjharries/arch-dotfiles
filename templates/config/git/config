@@ -1,0 +1,67 @@
+[color]
+	ui = true
+[core]
+	autocrlf = input
+	editor = vim
+	excludesfile = /home/cjharries/.config/git/gitignore
+	whitespace = blank-at-eol,blank-at-eof,space-before-tab
+	pager = less -F -S -R -i
+[filter "lfs"]
+	clean = git-lfs clean %f
+	required = true
+	smudge = git-lfs smudge %f
+[gitflow "branch"]
+	develop = dev
+	master = master
+[gitflow "bugfix.rebase"]
+	preserve-merges = true
+[gitflow "feature.finish"]
+	no-ff = true
+	preserve-merges = true
+	rebase = false
+	squash = false
+	push = true
+[gitflow "feature.rebase"]
+	preserve-merges = true
+[gitflow "hotfix.rebase"]
+	preserve-merges = true
+[gitflow "prefix"]
+	bugfix = bugfix/
+	feature = feature/
+	hotfix = hotfix/
+	release = release/
+	support = support/
+	versiontag =
+[gitflow "release.finish"]
+	push = true
+	squash = false
+[gitflow "release.rebase"]
+	preserve-merges = true
+[gitflow "support.rebase"]
+	preserve-merges = true
+[help]
+	autocorrect = 1
+[merge]
+	ff = false
+[push]
+	default = simple
+	followtags = true
+[user]
+	email = cj@wizardsoftheweb.pro
+	name = CJ Harries
+[alias]
+	cs = commit --signoff
+    ignore = '!gi() { IFS=","; curl -L -s "https://www.gitignore.io/api/$*" | tee .gitignore; }; gi'
+[apply]
+	whitespace = fix
+[branch]
+	autoSetupMerge = true
+[fetch]
+    prune = true
+    pruneTags = true
+[grep]
+    extendedRegexp = true
+[interactive]
+    singlekey = true
+[status]
+    branch = true
