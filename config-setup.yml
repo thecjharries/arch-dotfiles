@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+
+  tasks:
+    - name: install xdg-user-dirs
+      pacman:
+        name: xdg-user-dirs
+        state: present
+      become: yes
+
+    - name: scaffold XDG dirs
+      command: xdg-user-dirs-update
+
+    - name: Create config path
+      file:
+        path: "{{ xdg_config_home }}"
+        state: directory
+        mode: 0755
+
+    - name: Create config directories
+      file:
+        path: "{{ xdg_config_home }}/{{ item }}"
+        state: directory
+        mode: 0755
+      with_items: "{{ xdg_config_home_dirs }}"
+
+    - name: create .local
+      file:
+        path: "{{ local }}"
+        state: directory
+        mode: 0755
+
+    - name: create .local/bin
+      file:
+        path: "{{ local_bin }}"
+        state: directory
+        mode: 0755
+
+    - name: create .local/local
+      file:
+        path: "{{ local_build }}"
+        state: directory
+        mode: 0755
