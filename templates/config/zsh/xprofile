@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "xprofile"
+
+[[ -f ~/.zshenv ]] && source ~/.zshenv
