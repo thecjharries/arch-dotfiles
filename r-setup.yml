@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: gcc-fortran
+      - name: R
+      - name: rstudio-desktop-bin
+
+  roles:
+    - role: yay
