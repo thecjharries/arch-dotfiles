@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: ghostscript
+      - name: texlive-most
+      - name: tllocalmgr
+      - name: texstudio
+
+  roles:
+    - role: yay
