@@ -1,0 +1,46 @@
+---
+- hosts: localhost
+
+  vars:
+    ansible_become: yes
+    local_time: CST6CDT
+    primary_language: en_US.UTF-8
+    desired_locales:
+      - 'en_US.UTF-8 UTF-8'
+    services_to_enable:
+      - systemd-timesyncd.service
+
+  tasks:
+    - name: link local time
+      file:
+        src: "/usr/share/zoneinfo/{{ local_time }}"
+        dest: /etc/localtime
+        state: link
+
+    - name: update the hardware clock
+      command: hwclock --systohc --utc
+
+    - name: template locale gen
+      template:
+        src: "{{ template_path }}/etc/locale.gen"
+        dest: /etc/locale.gen
+
+    - name: generate locale
+      command: locale-gen
+
+    - name: template locale.conf
+      template:
+        src: "{{ template_path }}/etc/locale.conf"
+        dest: /etc/locale.conf
+
+    - name: template timesyncd
+      template:
+        src: "{{ template_path }}/etc/systemd/timesyncd.conf"
+        dest: /etc/systemd/timesyncd.conf
+
+    - name: enable services
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: reloaded
+      with_items: "{{ services_to_enable }}"
