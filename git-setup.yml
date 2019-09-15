@@ -1,0 +1,35 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: git
+      - name: gitflow-avh
+      - name: libgit2
+      - name: meld
+      - name: perl-cgi
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: copy init-template
+      copy:
+        src: "{{ template_path }}/config/git/init-template"
+        dest: "{{ xdg_config_home }}/git/"
+      tags:
+        - template
+
+    - name: template gitconfig
+      template:
+        src: "{{ template_path }}/config/git/config"
+        dest: "{{ xdg_config_home }}/git/config"
+      tags:
+        - template
+
+    - name: template gitignore
+      template:
+        src: "{{ template_path }}/config/git/gitignore"
+        dest: "{{ xdg_config_home }}/git/gitignore"
+      tags:
+        - template
