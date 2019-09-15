@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+
+  vars:
+    ansible_become: yes
+    plain_packages:
+      - spotify
+    classic_packages:
+      - goland
+      - pycharm-professional
+
+  tasks:
+    - name: install snap
+      yay:
+        name: snapd
+        state: latest
+
+    - name: enable the socket
+      systemd:
+        name: snapd.socket
+        enabled: yes
+        state: started
+
+    - name: enable classic installs
+      file:
+        src: /var/lib/snapd/snap
+        dest: /snap
+        state: link
+
+    - name: install normal snaps
+      snap:
+        name: "{{ plain_packages }}"
+
+    - name: install classic snaps
+      snap:
+        name: "{{ item }}"
+        classic: yes
+      with_items: "{{ classic_packages }}"
