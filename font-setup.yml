@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+
+  vars:
+    ansible_become: yes
+    packages_to_install:
+      - name: powerline-fonts
+      - name: pango
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: clone nerd fonts
+      git:
+        repo: https://github.com/ryanoasis/nerd-fonts.git
+        dest: /opt/nerd-fonts
+        depth: 1
+
+    - name: install nerd fonts
+      command: /opt/nerd-fonts/install.sh --link --install-to-system-path
+
+    - name: refresh the font cache
+      command: fc-cache -f -v
+
+
