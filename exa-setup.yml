@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+
+  vars:
+    packages_to_install:
+      - name: rust
+
+  roles:
+    - role: yay
+
+  tasks:
+    - name: install exa
+      command: cargo install exa
+
